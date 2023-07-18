@@ -57,7 +57,11 @@ def get_dataset(dataset, data_path, batch_size=1, subset="imagenette", args=None
         std = (0.3081, 0.3081, 0.3081)
 
         if args.zca:
-            transform = transforms.Compose([transforms.ToTensor()])
+            transform = transforms.Compose([  
+                transforms.Grayscale(3),
+                transforms.Resize((32, 32)),
+                transforms.ToTensor(),
+            ])        
         else:
             transform = transforms.Compose([  
                 transforms.Grayscale(3),
