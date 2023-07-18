@@ -12,7 +12,7 @@ import tqdm
 from torch.utils.data import Dataset
 from torchvision import datasets, transforms
 from scipy.ndimage.interpolation import rotate as scipyrotate
-from networks import MLP, ConvNet, LeNet, AlexNet, VGG11BN, VGG11, ResNet18, ResNet18BN_AP, ResNet18_AP
+from networks import MLP, ConvNet, LeNet, AlexNet, VGG11BN, VGG11, ResNet18, ResNet18BN_AP, ResNet18_AP, LeNet5
 
 class Config:
     imagenette = [0, 217, 482, 491, 497, 566, 569, 571, 574, 701]
@@ -49,7 +49,28 @@ def get_dataset(dataset, data_path, batch_size=1, subset="imagenette", args=None
     loader_train_dict = None
     class_map_inv = None
 
-    if dataset == 'CIFAR10':
+    if dataset == 'MNIST':
+        channels = 3
+        im_size = (32, 32)
+        num_classes = 10
+
+        if args.zca:
+            transform = transforms.Compose([transforms.ToTensor()])
+        else:
+            transform = transforms.Compose([  
+                transforms.Grayscale(3),
+                transforms.Resize((32, 32)),
+                transforms.ToTensor(),
+                transforms.Normalize((0.1307, 0.1307, 0.1307), (0.3081, 0.3081, 0.3081)),
+            ])
+
+        dst_train = datasets.MNIST(root=data_path, train=True, transform=transform, download=True)
+        dst_train = datasets.MNIST(root=data_path, train=False, transform=transform, download=True)
+        class_names = dst_train.classes
+        class_map = {x:x for x in range(num_classes)}
+
+
+    elif dataset == 'CIFAR10':
         channel = 3
         im_size = (32, 32)
         num_classes = 10
@@ -195,7 +216,9 @@ def get_network(model, channel, num_classes, im_size=(32, 32), dist=True):
     torch.random.manual_seed(int(time.time() * 1000) % 100000)
     net_width, net_depth, net_act, net_norm, net_pooling = get_default_convnet_setting()
 
-    if model == 'MLP':
+    if model == 'lenet5':
+        net = LeNet5(in_channels=channel, num_labels=num_classes)
+    elif model == 'MLP':
         net = MLP(channel=channel, num_classes=num_classes)
     elif model == 'ConvNet':
         net = ConvNet(channel=channel, num_classes=num_classes, net_width=net_width, net_depth=net_depth, net_act=net_act, net_norm=net_norm, net_pooling=net_pooling, im_size=im_size)

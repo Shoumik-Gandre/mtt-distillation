@@ -534,3 +534,37 @@ def ResNet18ImageNet(channel, num_classes):
 
 def ResNet6ImageNet(channel, num_classes):
     return ResNetImageNet(BasicBlock, [1,1,1,1], channel=channel, num_classes=num_classes)
+
+
+class LeNet5(nn.Module):
+
+    def __init__(self, in_channels: int=1, num_labels: int=10):
+        super(LeNet5, self).__init__()
+
+        self.feature_extractor = nn.Sequential(
+            nn.Conv2d(in_channels, 6, kernel_size=5),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2, stride=2),
+
+            nn.Conv2d(6, 16, kernel_size=5),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2, stride=2),
+
+            nn.Conv2d(16, 120, kernel_size=5),
+            nn.ReLU(),
+            nn.Flatten(),
+            nn.Linear(120, 84),
+            nn.ReLU(),
+        )
+
+        self.classifier = nn.Linear(84, num_labels)
+
+    def forward(self, img, out_feature=False):
+        feature = self.feature_extractor(img)
+        output = self.classifier(feature)
+
+        if out_feature == False:
+            return output
+        else:
+            return output, feature
+    
