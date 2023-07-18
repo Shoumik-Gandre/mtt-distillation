@@ -50,7 +50,7 @@ def get_dataset(dataset, data_path, batch_size=1, subset="imagenette", args=None
     class_map_inv = None
 
     if dataset == 'MNIST':
-        channels = 3
+        channel = 3
         im_size = (32, 32)
         num_classes = 10
 
@@ -65,7 +65,7 @@ def get_dataset(dataset, data_path, batch_size=1, subset="imagenette", args=None
             ])
 
         dst_train = datasets.MNIST(root=data_path, train=True, transform=transform, download=True)
-        dst_train = datasets.MNIST(root=data_path, train=False, transform=transform, download=True)
+        dst_test = datasets.MNIST(root=data_path, train=False, transform=transform, download=True)
         class_names = dst_train.classes
         class_map = {x:x for x in range(num_classes)}
 
