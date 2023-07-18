@@ -97,6 +97,7 @@ def main(args):
                 teacher_optim.zero_grad()
 
         trajectories.append(timestamps)
+        print(len(trajectories))
 
         if len(trajectories) == args.save_interval:
             n = 0
