@@ -53,6 +53,8 @@ def get_dataset(dataset, data_path, batch_size=1, subset="imagenette", args=None
         channel = 3
         im_size = (32, 32)
         num_classes = 10
+        mean = (0.1307, 0.1307, 0.1307)
+        std = (0.3081, 0.3081, 0.3081)
 
         if args.zca:
             transform = transforms.Compose([transforms.ToTensor()])
@@ -61,7 +63,7 @@ def get_dataset(dataset, data_path, batch_size=1, subset="imagenette", args=None
                 transforms.Grayscale(3),
                 transforms.Resize((32, 32)),
                 transforms.ToTensor(),
-                transforms.Normalize((0.1307, 0.1307, 0.1307), (0.3081, 0.3081, 0.3081)),
+                transforms.Normalize(mean, std),
             ])
 
         dst_train = datasets.MNIST(root=data_path, train=True, transform=transform, download=True)
